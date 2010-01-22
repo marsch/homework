@@ -1,0 +1,114 @@
+/* add styles here */
+@CHARSET "UTF-8"; 
+body {
+	font-family: arial;
+	font-size: 10pt;
+	padding: 0;
+	margin: 0; 
+}
+.container {
+	display: block; 
+	
+} 
+.header {
+	
+	min-height:18px;
+	padding:6px 2px 6px 6px;
+	background-color: #EEEEEE; 
+	border-bottom:2px solid #DEDEDE;
+	border-top:3px solid #AAAAAA;	
+}
+.formcontainer {
+	display: inline; 
+}
+#task_input {
+	width: 300px;
+}
+.formcontainer form {
+	display: inline;
+}
+
+.taskcontainer {
+	display: block;
+}
+
+#tasklist {
+	list-style-type:none;
+	margin: 0;
+	padding: 0;
+}
+
+#tasklist li{
+	border-bottom:1px solid #DEDEDE;
+	margin-bottom:1px;
+	min-height:18px;
+	padding:6px 2px 6px 6px;
+	display: block;
+	overflow: auto;
+}
+.task_left {
+	float: left;
+}
+.task_middle {
+	margin-left: 30px;
+	margin-right: 20px; 
+	float: left;
+}
+.task_right{
+	float: right;
+	margin-right: 30px;
+}
+.task_link {
+	padding-right: 10px;
+} 
+ 
+.completed{
+	text-decoration: line-through;
+	color: #b6b6b6;
+}
+.task_subject {  
+}
+.task_duedate {  
+	display: block;
+	font-size: 8pt;
+	font-style: italic;
+	color: #999;
+}
+.detailform {
+	display:inline;
+	vertical-align: top;
+} 
+.detailform li {
+	border-bottom:1px solid #DEDEDE;
+	margin-bottom:1px;
+	min-height:18px;
+	padding:6px 2px 6px 6px;
+	display: block;
+	overflow: auto;   
+}
+
+/* located in demo.css and creates a little calendar icon
+ * instead of a text link for "Choose date"
+ */
+a.dp-choose-date {
+	float: left;
+	width: 16px;
+	height: 16px;
+	padding: 0;
+	margin: 5px 3px 0;
+	display: block;
+	text-indent: -2000px;
+	overflow: hidden;
+	background: url(../images/calendar.png) no-repeat; 
+}
+a.dp-choose-date.dp-disabled {
+	background-position: 0 -20px;
+	cursor: default;
+}
+/* makes the input field shorter once the date picker code
+ * has run (to allow space for the calendar icon
+ */
+input.dp-applied {
+	width: 140px;
+	float: left;
+}

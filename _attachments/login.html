@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>Simple TodoApp - Login</title>
+	<link rel="stylesheet" href="style/main.css" type="text/css">
+	<script src="/_utils/script/json2.js"></script>
+	<script src="/_utils/script/jquery.js"></script>
+	<script src="/_utils/script/jquery.cookies.js"></script>
+	<script src="/_utils/script/jquery.couch.js"></script>
+	<script src="vendor/couchapp/jquery.couchapp.js"></script>
+
+	<script src="js/delegate.js"></script>
+	<script src="js/jquery.watermarkinput.js"></script>
+
+	<script type="text/javascript"> 
+	  $.CouchApp(function(app) {  
+		jQuery(function($){
+			   $("#username").Watermark("Username"); 
+			   $("#password").Watermark("Password"); 
+		}); 
+		var myform = $("form#login").get(0); 
+		$("form#login").submit(delegate(this,sendLogin));
+		function sendLogin(loginForm) { 
+			$.ajax ({ 
+				type: "POST",
+				url: "/_session",
+				data: "username="+$("form#login").get(0).username.value+"&password="+$("form#login").get(0).password.value,
+				success: delegate(this,onLoginSuccess),
+				error: delegate(this,onLoginError)
+			}) 
+			return false;
+		} 
+		function onLoginError(data) {
+			alert("error");
+		}
+		function onLoginSuccess(data) {
+			$.ajax ({ 
+				type: "GET",
+				url: "/_session",
+				success: delegate(this,onSession)
+			})
+		}
+		function onSession(data) { 
+			var response = JSON.parse(data);
+			var login = response.name;
+			var dbname = document.location.href.split('/')[3];
+			if(login) {
+				$.cookies.set("login", login , '/'+dbname); 
+			}
+			else
+			{
+				$.cookies.set("login","", '/'+dbname);
+			}
+			document.location = "index.html";
+		}
+	  });
+	</script>
+  </head>
+  <body>
+	<div class="container">
+		<div class="header">
+			<div class="formcontainer">
+				Login:
+				<form id="login">
+					<input id="username" type="text" maxlength="250" value="" name="username"/>
+					<input id="password" type="password" maxlength="250" value="" name="password"/>
+					<input type="submit" value="login"/>
+				</form>
+			</div>
+		</div>
+	</div>
+  </body> 
+</html>

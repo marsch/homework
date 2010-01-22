@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<title>Simple TodoApp - Logout</title>
+	<link rel="stylesheet" href="style/main.css" type="text/css">
+  </head>
+  <body>
+	<div class="container">
+		<div class="header">
+			<div class="formcontainer">
+				Logout.... 
+			</div>
+		</div>
+	</div>
+  </body>
+<script src="/_utils/script/json2.js"></script>
+<script src="/_utils/script/jquery.js"></script>
+<script src="/_utils/script/jquery.cookies.js"></script>
+<script src="/_utils/script/jquery.couch.js"></script>
+<script src="vendor/couchapp/jquery.couchapp.js"></script>
+
+<script src="js/delegate.js"></script>
+<script src="js/jquery.watermarkinput.js"></script>
+
+<script type="text/javascript">
+
+  $.CouchApp(function(app) { 
+	function sendLogout() { 
+			$.ajax ({ 
+				type: "DELETE",
+				url: "/_session",
+				success: delegate(this,onLogoutSuccess)
+			}) 
+			return false;
+	}
+	 
+	function onLogoutSuccess(data) {  
+		var dbname = document.location.href.split('/')[3];
+		$.cookies.set("login","", '/'+dbname);
+		document.location = "login.html";
+	}
+	
+	sendLogout();
+ 
+  });
+</script>
+</html>

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple TodoApp</title>
+    <link rel="stylesheet" href="<%= assets %>/style/main.css" type="text/css">
+ 	<link rel="stylesheet" href="<%= assets %>/style/datepicker.css" type="text/css">
+	<script src="/_utils/script/json2.js"></script>
+	<script src="/_utils/script/jquery.js"></script>
+	<script src="<%= assets %>/js/date.js"></script>
+	<script src="<%= assets %>/js/jquery.datepicker.js"></script>
+	<script src="/_utils/script/jquery.cookies.js"></script>
+	<script src="/_utils/script/jquery.couch.js"></script>  
+  	<script src="<%= assets %>/vendor/couchapp/jquery.couchapp.js"></script>
+
+	<script src="<%= assets %>/js/delegate.js"></script> 
+	<script src="<%= assets %>/js/task.js"></script>
+	<script language="javascript">
+		
+		var app = $.CouchApp(function(app) { 	
+	
+			$(function()
+			{
+				$('.date-pick').datePicker();
+			});
+  			$('html').ajaxStart(function() { $('#busyindicator').fadeIn("fast"); } );
+			$('html').ajaxStop(function() { $('#busyindicator').fadeOut("fast"); } );
+
+			app.loggedInNow(function(login) { 
+		 		//hier ist der code für angemeldete Benutzer
+				var myform = $("form#edittask").get(0);
+				$("form#edittask").submit(saveTask); 
+				$("#backBTN").click(backtoList); 
+		
+				function backtoList() { 
+					document.location = "../../index.html"
+				}
+				function saveTask (taskForm) { 
+					var mydoc = new Task(app,null);  
+					mydoc._id = myform.docid.value;
+					mydoc._rev = myform.docrev.value;
+					mydoc.subject = myform.subject.value;
+					mydoc.priority = myform.priority.value;
+					mydoc.completed = myform.complete.checked;
+					mydoc.description = myform.description.value;
+					mydoc.duedate = myform.duedate.value;
+					  
+					mydoc.user = login;  
+					var options = new Object();
+					options.success = function(response){ 
+						myform.docrev.value = response.rev;
+					}; 
+					mydoc.save(options); 
+					return false; //auf der seite bleiben
+				}
+				},function() {
+				//wenn er nicht angemeldet ist dann einfach zur login page
+				document.location = "login.html";
+			});
+		});
+	</script>
+  </head>
+  <body>
+    <div class="container">
+		<div class="header">
+			<b>Editing:</b> <i><%= doc.subject %></i>
+		</div> 
+	</div>
+	
+	<div class="detailform" style="display:block;"> 
+		<form id="edittask">
+			<ol>
+				<li> 	
+					<label for="subject">Subject:</label> <br />
+					<input id="subject" name="subject" type="text" maxlength="250" value="<%= doc.subject %>" />
+		 		</li>
+				<li>
+					<label for="priority">Priority:</label> <br />
+					<select name="priority" id="priority">
+							<option value="high" <%= ((doc.priority == "high")? 'selected="selected"': '')%>>high</option>
+							<option value="middle" <%= ((doc.priority == "middle")? 'selected="selected"': '')%>>middle</option>
+							<option value="low" <%= ((doc.priority == "low")? 'selected="selected"': '')%>>low</option> 
+					</select>
+				</li>
+				<li>
+					<input type="checkbox" id="complete" name="complete" <%= ((doc.completed)? 'checked="checked"': '')%>/>completed 
+				</li>
+				<li> 
+					<label for="duedate">Duedate:</label> <br/>
+					<input id="duedate" class="date-pick" name="duedate" value="<%= doc.duedate %>"/>
+				</li>
+				<li>
+					<label for="description">Description:</label><br /> 
+					<textarea name="description" cols="50" rows="10"><%= doc.description %></textarea>
+				</li>
+				<li>
+					<input type="button" value="back" name="backBTN" id="backBTN"/>
+					<input type="submit" value="save"/>
+					<div id="busyindicator" style="display:none;">saving document.....</div>
+				</li>
+			<ol>
+			<input type="hidden" name="docid" value="<%= doc._id %>">
+			<input type="hidden" name="docrev" value="<%= doc._rev %>">
+		</form> 
+	</div>
+</body>
+</html>

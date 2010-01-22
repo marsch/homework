@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Simple TodoApp</title>
+    <link rel="stylesheet" href="style/main.css" type="text/css">
+	<script src="/_utils/script/json2.js"></script>
+	<script src="/_utils/script/jquery.js"></script>
+	<script src="/_utils/script/jquery.cookies.js"></script>
+	<script src="/_utils/script/jquery.couch.js"></script>
+	<script src="vendor/couchapp/jquery.couchapp.js"></script>
+	
+	<script src="js/delegate.js"></script>
+	<script src="js/jquery.watermarkinput.js"></script>
+	<script src="js/taskList.js"></script>
+	<script src="js/task.js"></script>
+	<script language ="javascript">
+		var MyTaskList; 
+		var app = $.CouchApp(function(app) {
+			MyTaskList = new TaskList(app,"#tasklist");	
+	
+			jQuery(function($){
+				   $("#task_input").Watermark("Enter Task Subject"); 
+			});
+			function refreshTasks() {
+			 	MyTaskList.reset();
+				MyTaskList.load($("[name=filterOption]:checked").val());
+			}	
+	
+			refreshTasks();
+	
+			app.loggedInNow(function(login) { 
+		 		//hier ist der code für angemeldete Benutzer
+				var myform = $("form#addtask").get(0);
+				$("form#addtask").submit(addNewTaskForm); 
+		
+				function addNewTaskForm (taskForm) {
+					var mydoc = new Task(app,null);
+					mydoc.subject = $("form#addtask").get(0).task_input.value;
+					mydoc.user = login;  
+					var options = new Object();
+					options.success = function(response){ 
+						refreshTasks($("[name=filterOption]:checked").val());  
+						myform.task.value = "";    
+					}; 
+					mydoc.save(options); 
+					return false; //auf der seite bleiben
+				}
+				},function() {
+				//wenn er nicht angemeldet ist dann einfach zur login page
+				document.location = "login.html";
+			});
+		});
+	</script>
+  </head>
+  <body>
+    <div class="container">
+		<div class="header">
+			<div class="formcontainer">
+				New Task:
+				<form id="addtask">
+					<input id="task_input" type="text" maxlength="250" value="" name="task"/>
+					<input type="submit" value="add"/>
+				</form>
+				<form id="listFilter" style="padding-left:20px;"> Show Tasks
+					<input type="radio" name="filterOption" id="filterOption" value="tasks" checked="checked" onclick="MyTaskList.reset();MyTaskList.load(this.value);"> All
+					<input type="radio" name="filterOption" id="filterOption" value="open" onclick="MyTaskList.reset();MyTaskList.load(this.value);"> Open
+					<input type="radio" name="filterOption" id="filterOption" value="completed" onclick="MyTaskList.reset();MyTaskList.load(this.value);"> Completed
+				</form>
+				<div style="float:right;padding-right:20px;">
+					<a href="logout.html">logout</a>
+				</div>
+			</div>
+		</div>
+		<div class="taskcontainer">
+			<ol id="tasklist"> 
+			</ol>
+		</div>
+	</div>
+  </body>
+
+</html>
